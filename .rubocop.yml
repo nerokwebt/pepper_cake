@@ -1,0 +1,20 @@
+require:
+  - rubocop-rails
+  - rubocop-capybara
+
+Layout/LineLength:
+  Max: 255
+
+AllCops:
+  NewCops: enable
+  Exclude:
+    - 'db/**/*'
+    - 'config/**/*'
+    - 'script/**/*'
+    - 'bin/{rails,rake,bundle}'
+    - 'app/mailers/application_mailer.rb'
+    - 'app/helpers/application_helper.rb'
+    - 'app/models/application_record.rb'
+    - 'app/policies/*'
+    - 'spec/spec_helper.rb'
+    - 'spec/rails_helper.rb'
