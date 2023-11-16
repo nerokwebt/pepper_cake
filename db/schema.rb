@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_11_16_155737) do
+ActiveRecord::Schema[7.1].define(version: 2023_11_16_163831) do
   create_table "meals", force: :cascade do |t|
     t.string "author"
     t.string "name"
@@ -19,7 +19,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_11_16_155737) do
     t.integer "cook_time"
     t.integer "total_time"
     t.integer "people_quantity"
-    t.integer "rate"
+    t.float "rate"
     t.integer "nb_comments"
     t.string "image"
     t.text "tags"

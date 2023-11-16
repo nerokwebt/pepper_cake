@@ -5,7 +5,7 @@ File.readlines('./recipes-fr.json').each do |line|
 
   meal_attributes.except!('author_tip', 'budget')
   meal_name = Meal.create(meal_attributes).name
-  puts "Created #{meal_name}"
+  puts "Created meal #{meal_name}"
 end
 
 puts "Meals generated!"
