@@ -1,11 +1,11 @@
 puts "Generating meals in database..."
 
 File.readlines('./recipes-fr.json').each do |line|
-  json = JSON.parse(line)
+  meal_attributes = JSON.parse(line)
 
-  json.except!('author_tip', 'budget')
-  meal = Meal.create(json)
-  puts "Created #{meal.name}"
+  meal_attributes.except!('author_tip', 'budget')
+  meal_name = Meal.create(meal_attributes).name
+  puts "Created #{meal_name}"
 end
 
 puts "Meals generated!"
