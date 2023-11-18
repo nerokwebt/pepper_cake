@@ -1,0 +1,8 @@
+%p
+  - @meals.each do |meal|
+    %p= meal.name
+
+%p
+  = form_tag meals_path, :method => :get do
+    = text_field_tag :search, params[:search]
+    = submit_tag "Search", name: nil, class: "btn btn-default"
