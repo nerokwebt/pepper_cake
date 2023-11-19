@@ -5,6 +5,21 @@ require:
 Layout/LineLength:
   Max: 255
 
+Rails/Output:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Metrics/ClassLength:
+  Enabled: false
+
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/MethodLength:
+  Enabled: false
+
 AllCops:
   NewCops: enable
   Exclude:

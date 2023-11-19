@@ -13,14 +13,14 @@ class Meal < ApplicationRecord
 
   validates :name, uniqueness: true
 
-  def self.suggested_meals attributes
-    puts "TOTO SUGGESTED"
+  def self.suggested_meals(attributes)
+    puts 'TOTO SUGGESTED'
     puts attributes
     Meal.where(name: "Wrap aux légumes d'été et feta")
   end
 
-  def self.search attributes
-    puts "TOTO SEARCH"
+  def self.search(attributes)
+    puts 'TOTO SEARCH'
     puts attributes
     Meal.where(name: "Wrap aux légumes d'été et feta")
   end
