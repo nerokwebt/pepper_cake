@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# This class normalizes data extracted from the recipes file, mainly to create ingredients in database used to match the user's search, by
+# removing useless information for the search as weight or authors commentaries, helping to get a clean autocomplete. Though, the methods don't
+# drop those weights and commentaries and store it in a column instead for display purposes.
 class Normalizer < ApplicationRecord
   QUANTITIES_LIST = [
     'b[âa]ton',
