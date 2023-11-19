@@ -1,89 +1,89 @@
+# frozen_string_literal: true
+
 class Normalizer < ApplicationRecord
   QUANTITIES_LIST = [
-      'b[âa]ton',
-      'boc(al|aux)',
-      'bol',
-      'bo[iî]te',
-      'botte',
-      'bouquet',
-      'bouteille',
-      'branche',
-      'brin',
-      'brique',
-      'carr[ée]',
-      'centim[eè]tre',
-      'cerneau',
-      'cube',
-      'cuill[èe]res? (à|a|de) ?(caf[ée]|soupe) ?(.*)',
-      'demi',
-      'extrait',
-      'feuille',
-      'filet',
-      'gousse',
-      'goutte',
-      'pinc[ée]e',
-      'poign[ée]e',
-      'pointe',
-      'portion',
-      'pot',
-      'reste',
-      'rondelle',
-      'rouleau',
-      'sachet',
-      'sac',
-      'tasse',
-      'touffe',
-      'tube',
-      'trait',
-      'tranche',
-      'verre',
-    ].join('|').freeze
+    'b[âa]ton',
+    'boc(al|aux)',
+    'bol',
+    'bo[iî]te',
+    'botte',
+    'bouquet',
+    'bouteille',
+    'branche',
+    'brin',
+    'brique',
+    'carr[ée]',
+    'centim[eè]tre',
+    'cerneau',
+    'cube',
+    'cuill[èe]res? (à|a|de) ?(caf[ée]|soupe) ?(.*)',
+    'demi',
+    'extrait',
+    'feuille',
+    'filet',
+    'gousse',
+    'goutte',
+    'pinc[ée]e',
+    'poign[ée]e',
+    'pointe',
+    'portion',
+    'pot',
+    'reste',
+    'rondelle',
+    'rouleau',
+    'sachet',
+    'sac',
+    'tasse',
+    'touffe',
+    'tube',
+    'trait',
+    'tranche',
+    'verre'
+  ].join('|').freeze
 
-    MATCH_QUANTITIES = /\d*? ?(gros(se)?s?|grande?s?|petite?s?)? ?(#{QUANTITIES_LIST})s? d['e]/.freeze
+  MATCH_QUANTITIES = /\d*? ?(gros(se)?s?|grande?s?|petite?s?)? ?(#{QUANTITIES_LIST})s? d['e]/
 
-    MATCH_BEFORE = [
-      /(\d+|[0-9]\/[0-9]|[0-9]\.[0-9]) ?[m?k?]?g d['e]/, /(\d+|[0-9]\/[0-9]|[0-9]\.[0-9]) ?[m?c?d?]?l d['e]/,
-      /\A ?[m?k?]?g d['e]/, /\A ?[m?c?d?]?l d['e]/,
-      /[0-9]\/[0-9]/, /[0-9]\.[0-9]/,
-      /\A[^A-Za-zéèêëàâùîïô]*/, /[^A-Za-zéèêëàâùîïô]\z/,
-      /^\d+/,
-      /\+(.*)/, /\((.*)/, /\)(.*)/, /\,(.*)/, /\.(.*)/, /\/(.*)/, /\\(.*)/, /\=(.*)/, /\"(.*)/, / \-(.*)/, /\;(.*)/,
-      / et (.*)/, / & ?(.*)/, / ou (.*)/,
-      / et\z/, / ou\z/,
-      / assez (.*)/,
-      / avec (.*)/,
-      / bien (.*)/,
-      / chacune?s?(.*)/,
-      / coupés?(.*)/,
-      / d['e] environ (.*)/,
-      / dans(.*)/,
-      / finement(.*)/,
-      / par personne(.*)/,
-      / portions?(.*)/,
-      / pour (.*)/,
-      / soit (.*)/,
-      /(à|a|selon) ?(votre)? (convenance|volonté)(.*)/,
-      /[de ]?\d+ ?[m?k?]?g? [aà]? \d+ ?[m?k?]?g(.*)/,
-      /[de ]?\d+ ?[m?k?]?g(.*)/,
-      /[de ]?\d+ ?[m?c?d?]?l? [aà]? \d+ ?[m?c?d?]?l(.*)/,
-      /[de ]?\d+ ?[m?c?d?]?l(.*)/,
-      /(a|à) ?\d+% ?(de)?(.*)/,
-    ].freeze
+  MATCH_BEFORE = [
+    %r{(\d+|[0-9]/[0-9]|[0-9]\.[0-9]) ?[m?k]?g d['e]}, %r{(\d+|[0-9]/[0-9]|[0-9]\.[0-9]) ?[m?cd]?l d['e]},
+    /\A ?[m?k]?g d['e]/, /\A ?[m?cd]?l d['e]/,
+    %r{[0-9]/[0-9]}, /[0-9]\.[0-9]/,
+    /\A[^A-Za-zéèêëàâùîïô]*/, /[^A-Za-zéèêëàâùîïô]\z/,
+    /^\d+/,
+    /\+(.*)/, /\((.*)/, /\)(.*)/, /,(.*)/, /\.(.*)/, %r{/(.*)}, /\\(.*)/, /=(.*)/, /"(.*)/, / -(.*)/, /;(.*)/,
+    / et (.*)/, / & ?(.*)/, / ou (.*)/,
+    / et\z/, / ou\z/,
+    / assez (.*)/,
+    / avec (.*)/,
+    / bien (.*)/,
+    / chacune?s?(.*)/,
+    / coupés?(.*)/,
+    / d['e] environ (.*)/,
+    / dans(.*)/,
+    / finement(.*)/,
+    / par personne(.*)/,
+    / portions?(.*)/,
+    / pour (.*)/,
+    / soit (.*)/,
+    /(à|a|selon) ?(votre)? (convenance|volonté)(.*)/,
+    /[de ]?\d+ ?[m?k]?g? [aà]? \d+ ?[m?k]?g(.*)/,
+    /[de ]?\d+ ?[m?k]?g(.*)/,
+    /[de ]?\d+ ?[m?cd]?l? [aà]? \d+ ?[m?cd]?l(.*)/,
+    /[de ]?\d+ ?[m?cd]?l(.*)/,
+    /(a|à) ?\d+% ?(de)?(.*)/
+  ].freeze
 
-    MATCH_AFTER = [
-      / (d['e])? ?\d+(.*)\z/,
-      /n°(.*)/, / n\z/,
-    ].freeze
+  MATCH_AFTER = [
+    / (d['e])? ?\d+(.*)\z/,
+    /n°(.*)/, / n\z/
+  ].freeze
 
-    MATCH_LAST = [
-      / d['e]? ?\z/,
-      / .\z/,
-    ].freeze
+  MATCH_LAST = [
+    / d['e]? ?\z/,
+    / .\z/
+  ].freeze
 
   # Reads the json file to populate database
-  def self.parse file_path
-    ingredients = []
-
+  def self.parse(file_path)
     File.readlines(file_path).each do |line|
       meal_attributes = JSON.parse(line)
 
@@ -94,24 +94,24 @@ class Normalizer < ApplicationRecord
       meal_attributes.except!('author_tip', 'budget')
 
       # Renames column so we can differentiate Ingredients association for ingredients stored in Meal column in database
-      meal_attributes['display_ingredients'] = meal_attributes.delete('ingredients')
+      meal_attributes['display_ingredients'] = meal_attributes.delete('ingredients').uniq
 
       ingredients_meals_attributes = Normalizer.normalize_ingredients(meal_attributes['display_ingredients'])
 
       # Creates a meal in database with all prepared attributes and nested attributes
-      if ingredients_meals_attributes.any?
-        meal_attributes[:ingredients_meals_attributes] = ingredients_meals_attributes
-        meal_attributes = Normalizer.normalize_meal(meal_attributes)
+      next unless ingredients_meals_attributes.any?
 
-        Normalizer.populate_db(meal_attributes, Meal)
-      end
+      meal_attributes[:ingredients_meals_attributes] = ingredients_meals_attributes.uniq
+      meal_attributes = Normalizer.normalize_meal(meal_attributes)
+
+      Normalizer.populate_db(meal_attributes, Meal)
     end
 
-    puts "Meals generated!"
+    puts 'Meals generated!'
   end
 
   # Normalizes ingredients by removing weight and/or useless information for the database
-  def self.normalize_ingredients ingredients
+  def self.normalize_ingredients(ingredients)
     ingredients_meals_attributes = []
 
     ingredients.each do |ingredient|
@@ -127,7 +127,7 @@ class Normalizer < ApplicationRecord
   end
 
   # Matches regex patterns defined as constants to normalize the ingredient
-  def self.match_ingredient ingredient
+  def self.match_ingredient(ingredient)
     # Never use ! on methods here or it will modify the reference as well, which is the displayed_attributes column we don't want to change
 
     # Normalises case, whitespaces and special characters to manipulate easier
@@ -150,17 +150,17 @@ class Normalizer < ApplicationRecord
   end
 
   # Creates the object in database
-  def self.populate_db attributes, object_class
+  def self.populate_db(attributes, object_class)
     object = object_class.create(attributes)
-    
-    puts "Created #{object_class.to_s} #{object.name}"
+
+    puts "Created #{object_class} #{object.name}"
 
     object
   end
 
   # Transforms all time values as string into integers
-  def self.normalize_meal meal_attributes
-    ['prep_time', 'cook_time', 'total_time'].each do |attribute|
+  def self.normalize_meal(meal_attributes)
+    %w[prep_time cook_time total_time].each do |attribute|
       meal_attributes[attribute] = Normalizer.convert_time_string_to_seconds(meal_attributes[attribute])
     end
 
@@ -171,16 +171,16 @@ class Normalizer < ApplicationRecord
   def self.convert_time_string_to_seconds(time)
     time_array = []
 
-    ['j', 'h', 'min'].each do |duration_type|
-      if time and duration_type.in?(time)
-        split_time = Normalizer.get_seconds_nb_from_duration_type(duration_type, time)
+    %w[j h min].each do |duration_type|
+      next unless time && duration_type.in?(time)
 
-        # We store the processed value
-        time_array << split_time[:processed_value]
+      split_time = Normalizer.get_seconds_nb_from_duration_type(duration_type, time)
 
-        # We only reiterate on the remaining unprocessed values
-        time = split_time[:remaining_value]
-      end
+      # We store the processed value
+      time_array << split_time[:processed_value]
+
+      # We only reiterate on the remaining unprocessed values
+      time = split_time[:remaining_value]
     end
 
     time_array.inject(:+)
