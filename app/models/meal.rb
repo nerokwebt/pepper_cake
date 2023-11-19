@@ -2,7 +2,12 @@ class Meal < ApplicationRecord
   serialize :tags, coder: JSON, type: Array
   serialize :ingredients, coder: JSON, type: Array
 
-  validates :author, :name, :difficulty, :prep_time, :cook_time, :total_time, :people_quantity, :rate, :nb_comments, :image, :tags, :ingredients, presence: true
+  has_many :ingredients_meals, dependent: :destroy
+  has_many :ingredients, through: :ingredients_meals
+
+  accepts_nested_attributes_for :ingredients_meals
+
+  validates :author, :name, :difficulty, :prep_time, :cook_time, :total_time, :people_quantity, :rate, :nb_comments, :image, :tags, :display_ingredients, :ingredients_meals, presence: true
 
   validates :name, uniqueness: true
 
