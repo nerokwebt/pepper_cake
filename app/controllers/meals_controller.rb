@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MealsController < ApplicationController
   def index
     @meals = Meal.search(params)

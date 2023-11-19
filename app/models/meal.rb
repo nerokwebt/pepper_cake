@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Meal < ApplicationRecord
   serialize :tags, coder: JSON, type: Array
   serialize :ingredients, coder: JSON, type: Array
