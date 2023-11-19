@@ -261,6 +261,12 @@ GEM
     sentry-ruby (5.13.0)
       concurrent-ruby (~> 1.0, >= 1.0.2)
     sexp_processor (4.17.0)
+    simple_form (5.3.0)
+      actionpack (>= 5.2)
+      activemodel (>= 5.2)
+    simple_form_autocomplete (1.1.0)
+      activesupport
+      simple_form
     sprockets (4.2.1)
       concurrent-ruby (~> 1.0)
       rack (>= 2.2.4, < 4)
@@ -328,6 +334,8 @@ DEPENDENCIES
   selenium-webdriver
   sentry-rails (~> 5.13)
   sentry-ruby (~> 5.13)
+  simple_form
+  simple_form_autocomplete
   sprockets-rails
   sqlite3 (~> 1.4)
   stimulus-rails
