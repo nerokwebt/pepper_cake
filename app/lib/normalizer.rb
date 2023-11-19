@@ -47,9 +47,9 @@ class Normalizer < ApplicationRecord
   MATCH_QUANTITIES = /\d*? ?(gros(se)?s?|grande?s?|petite?s?)? ?(#{QUANTITIES_LIST})s? d['e]/
 
   MATCH_BEFORE = [
-    %r{(\d+|[0-9]/[0-9]|[0-9]\.[0-9]) ?[m?k]?g d['e]}, %r{(\d+|[0-9]/[0-9]|[0-9]\.[0-9]) ?[m?cd]?l d['e]},
-    /\A ?[m?k]?g d['e]/, /\A ?[m?cd]?l d['e]/,
-    %r{[0-9]/[0-9]}, /[0-9]\.[0-9]/,
+    %r{\d+[\/\.]?(\d+)? ?([mk]?g|[mcd]?l) d['e]},
+    /\A ?([mk]?g|[mcd]?l) d['e]/,
+    %r{[0-9]?[0-9][/\.][0-9]?[0-9]},
     /\A[^A-Za-zéèêëàâùîïô]*/, /[^A-Za-zéèêëàâùîïô]\z/,
     /^\d+/,
     /\+(.*)/, /\((.*)/, /\)(.*)/, /,(.*)/, /\.(.*)/, %r{/(.*)}, /\\(.*)/, /=(.*)/, /"(.*)/, / -(.*)/, /;(.*)/,
@@ -68,10 +68,8 @@ class Normalizer < ApplicationRecord
     / pour (.*)/,
     / soit (.*)/,
     /(à|a|selon) ?(votre)? (convenance|volonté)(.*)/,
-    /[de ]?\d+ ?[m?k]?g? [aà]? \d+ ?[m?k]?g(.*)/,
-    /[de ]?\d+ ?[m?k]?g(.*)/,
-    /[de ]?\d+ ?[m?cd]?l? [aà]? \d+ ?[m?cd]?l(.*)/,
-    /[de ]?\d+ ?[m?cd]?l(.*)/,
+    /[de ]?\d+ ?([mk]?g|[mcd]?l)? [aà]? \d+ ?([mk]?g|[mcd]?l)(.*)/,
+    /[de ]?\d+ ?([mk]?g|[mcd]?l)(.*)/,
     /(a|à) ?\d+% ?(de)?(.*)/
   ].freeze
 
@@ -86,9 +84,15 @@ class Normalizer < ApplicationRecord
   ].freeze
 
   # Reads the json file to populate database
-  def self.parse(file_path)
-    File.readlines(file_path).each do |line|
+  def self.parse(file)
+    lines_nb = File.foreach(file).count
+    lines_count = 1
+
+    File.readlines(file).each do |line|
       meal_attributes = JSON.parse(line)
+
+      puts "\rParsing progess: #{lines_count} / #{lines_nb}"
+      lines_count += 1
 
       # Can't use meals without an image in app
       next if meal_attributes['image'].blank?
@@ -156,7 +160,7 @@ class Normalizer < ApplicationRecord
   def self.populate_db(attributes, object_class)
     object = object_class.create(attributes)
 
-    puts "Created #{object_class} #{object.name}"
+    puts "Created #{object_class} #{object.name}" if object.persisted?
 
     object
   end
