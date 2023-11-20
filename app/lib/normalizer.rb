@@ -19,7 +19,7 @@ class Normalizer < ApplicationRecord
     'centim[eè]tre',
     'cerneau',
     'cube',
-    'cuill[èe]res? (à|a|de) ?(caf[ée]|soupe) ?(.*)',
+    'cuill[èe]res? (à|a|de)? ?(caf[ée]|soupe)? ?(.*)',
     'demi',
     'extrait',
     'feuille',
