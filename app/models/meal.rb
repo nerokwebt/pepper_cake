@@ -18,17 +18,17 @@ class Meal < ApplicationRecord
   end
 
   def self.search_meals(ingredients_names)
-    if ingredients_names&.any?
-      ingredients = Ingredient.where(name: ingredients_names.reject(&:empty?))
-      meals_w_one_ingredient = meals_w_one_ingredient(ingredients)
+    return unless ingredients_names&.any?
 
-      meals_to_exclude = Meal.joins(:ingredients_meals)
-        .where(id: meals_w_one_ingredient.pluck(:id))
-        .where.not('ingredients_meals.ingredient_id': ingredients.pluck(:id))
+    ingredients = Ingredient.where(name: ingredients_names.reject(&:empty?))
+    meals_w_one_ingredient = meals_w_one_ingredient(ingredients)
 
-      Meal.where(id: meals_w_one_ingredient.pluck(:id))
+    meals_to_exclude = Meal.joins(:ingredients_meals)
+                           .where(id: meals_w_one_ingredient.pluck(:id))
+                           .where.not('ingredients_meals.ingredient_id': ingredients.pluck(:id))
+
+    Meal.where(id: meals_w_one_ingredient.pluck(:id))
         .where.not(id: meals_to_exclude.pluck(:id))
-    end
   end
 
   def self.suggested_meals(ingredients_names)
@@ -36,7 +36,6 @@ class Meal < ApplicationRecord
       ingredients = Ingredient.where(name: ingredients_names.reject(&:empty?))
       Meal.meals_w_one_ingredient(ingredients).order(rate: :desc).first(30).sample(5)
     else
-      raise 'toto'
       Meal.where('nb_comments > ?', 30).where('rate > ?', 4.6).sample(5)
     end
   end
