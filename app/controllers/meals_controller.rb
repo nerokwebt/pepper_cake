@@ -3,7 +3,7 @@
 class MealsController < ApplicationController
   def index
     @meals = Meal.search_meals(params[:ingredients])
-    @suggested_meals = Meal.order(:rate).first(5)
+    @suggested_meals = Meal.suggested_meals(params[:ingredients])
   end
 
   def show
