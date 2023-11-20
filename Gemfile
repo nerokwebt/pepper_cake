@@ -78,11 +78,6 @@ gem 'sentry-ruby', '~> 5.13'
 
 gem 'sentry-rails', '~> 5.13'
 
-gem 'tailwindcss-rails', '~> 2.0'
-
 gem 'haml-rails', '~> 2.0'
 
 gem 'html2haml'
-
-gem 'simple_form'
-gem 'simple_form_autocomplete'
