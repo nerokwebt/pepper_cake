@@ -48,7 +48,7 @@ class Meal < ApplicationRecord
         suggested_meals.or(random_suggested_meals).first(30).sample(6)
       end
     else
-      random_suggested_meals
+      random_suggested_meals.sample(6)
     end
   end
 end
