@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for sparkling-moon-9887 on 2023-11-16T15:29:04+01:00
+# fly.toml app configuration file generated for peppercake on 2023-11-21T20:19:52+01:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "sparkling-moon-9887"
+app = "peppercake"
 primary_region = "cdg"
 console_command = "/rails/bin/rails console"
 
