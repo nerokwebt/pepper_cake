@@ -4,52 +4,92 @@
 # removing useless information for the search as weight or authors commentaries, helping to get a clean autocomplete. Though, the methods don't
 # drop those weights and commentaries and store it in a column instead for display purposes.
 class Normalizer < ApplicationRecord
-  QUANTITIES_LIST = [
+  TERMS_LIST = [
+    'aiguillette',
+    'aile',
+    'barre',
+    'barquette',
     'b[âa]ton',
+    'blanc',
+    'bloc',
     'boc(al|aux)',
     'bol',
-    'bo[iî]te',
+    'bo[iî]tes? ?(.*)',
     'botte',
+    'boule',
     'bouquet',
     'bouteille',
     'branche',
     'brin',
     'brique',
+    'briquette',
+    'b[ûu]che',
     'carr[ée]',
     'centim[eè]tre',
     'cerneau',
+    'chair',
+    'coeur',
+    'c[ôo]te',
+    'c[ôo]telette',
+    'couteau',
     'cube',
-    'cuill[èe]res? (à|a|de)? ?(caf[ée]|soupe)? ?(.*)',
+    'cuisse',
+    'cuill[èe]res? ?(à|a|de)? ?(caf[ée]|soupe)? ?(.*)',
     'demi',
+    'dé',
+    'dose',
+    'dosette',
+    '[ée]paule',
     'extrait',
     'feuille',
     'filet',
+    'foie',
+    'grain',
     'gousse',
     'goutte',
+    'jarret',
+    'lamelle',
+    'louche',
+    'magret',
+    'moitié',
+    'morceaux?',
+    'paquet',
+    'pavé',
+    'petite?',
     'pinc[ée]e',
+    'plaque',
     'poign[ée]e',
     'pointe',
+    'poitrine ?(fum[ée])?',
     'portion',
     'pot',
+    'quartier',
+    'queue',
+    'r[âa]ble',
     'reste',
     'rondelle',
-    'rouleau',
-    'sachet',
+    'r[ôo]ti',
+    'rouleaux?',
     'sac',
-    'tasse',
+    'sachet',
+    'saut[ée]',
+    'tablette',
+    'tasses? ?(à|a|de)? ?(caf[ée])? ?(.*)',
     'touffe',
-    'tube',
     'trait',
-    'tranche',
-    'verre'
+    'tranches? ?([ée]paisses?|fines?)?',
+    'tube',
+    'verre',
+    'zeste'
   ].join('|').freeze
 
-  MATCH_QUANTITIES = /\d*? ?(gros(se)?s?|grande?s?|petite?s?)? ?(#{QUANTITIES_LIST})s? d['e]/
+  MATCH_TERMS = /(\d*)? ?(be(au|lle)s?|bon(ne)?s?|fine?s?|gros(se)?s?|grande?s?|petite?s?)? ?(#{TERMS_LIST})s? d['e]s?/
 
   MATCH_BEFORE = [
+    /demi /,
     %r{\d+[\/\.]?(\d+)? ?([mk]?g|[mcd]?l) d['e]},
     /\A ?([mk]?g|[mcd]?l) d['e]/,
-    %r{[0-9]?[0-9][/\.][0-9]?[0-9]},
+    %r{\d+[/\.]\d+},
     /\A[^A-Za-zéèêëàâùîïô]*/, /[^A-Za-zéèêëàâùîïô]\z/,
     /^\d+/,
     /\+(.*)/, /\((.*)/, /\)(.*)/, /,(.*)/, /\.(.*)/, %r{/(.*)}, /\\(.*)/, /=(.*)/, /"(.*)/, / -(.*)/, /;(.*)/,
@@ -60,27 +100,51 @@ class Normalizer < ApplicationRecord
     / bien (.*)/,
     / chacune?s?(.*)/,
     / coupés?(.*)/,
-    / d['e] environ (.*)/,
+    / d('|e )environ (.*)/,
+    / d[ée]j[àa] (.*)/,
     / dans(.*)/,
     / finement(.*)/,
+    / non (.*)/,
     / par personne(.*)/,
+    /petite?s? /,
     / portions?(.*)/,
     / pour (.*)/,
     / soit (.*)/,
+    / \S+®(.*)/,
     /(à|a|selon) ?(votre)? (convenance|volonté)(.*)/,
+    / selon (.*)/,
     /[de ]?\d+ ?([mk]?g|[mcd]?l)? [aà]? \d+ ?([mk]?g|[mcd]?l)(.*)/,
     /[de ]?\d+ ?([mk]?g|[mcd]?l)(.*)/,
     /(a|à) ?\d+% ?(de)?(.*)/
   ].freeze
 
   MATCH_AFTER = [
+    /\A(l'|l[ae] )/,
     / (d['e])? ?\d+(.*)\z/,
     /n°(.*)/, / n\z/
   ].freeze
 
   MATCH_LAST = [
     / d['e]? ?\z/,
+    /\Ad['e] /,
     / .\z/
+  ].freeze
+
+  TO_EXCLUDE = [
+    /\Aeau(\z| (.*))/,
+    /\Aficelle(.*)/,
+    /\Ahuile(\z| (.*))/,
+    /\Amélange(\z| (.*))/,
+    /(\A|(.*) )poivre(\z| (.*))/,
+    /(\A|(.*) )(gros)? ?sel(\z| (.*))/,
+    /\Avinaigre(\z| (.*))/
+  ].freeze
+
+  COMPLEX_INGREDIENTS_TO_KEEP = %w[
+    fécule
+    pomme
+    pommes
+    vin
   ].freeze
 
   # Reads the json file to populate database
@@ -89,42 +153,61 @@ class Normalizer < ApplicationRecord
     lines_count = 1
 
     File.readlines(file).each do |line|
-      meal_attributes = JSON.parse(line)
-
       puts "\rParsing progess: #{lines_count} / #{lines_nb}"
       lines_count += 1
 
-      # Can't use meals without an image in app
-      next if meal_attributes['image'].blank?
-
-      # Removes the attributes we are not using in the app
-      meal_attributes.except!('author_tip', 'budget')
-
-      # Renames column so we can differentiate Ingredients association for ingredients stored in Meal column in database
-      meal_attributes['display_ingredients'] = meal_attributes.delete('ingredients').uniq
-
-      ingredients_meals_attributes = Normalizer.normalize_ingredients(meal_attributes['display_ingredients'])
-
-      # Creates a meal in database with all prepared attributes and nested attributes
-      next unless ingredients_meals_attributes.any?
-
-      meal_attributes[:ingredients_meals_attributes] = ingredients_meals_attributes.uniq
-      meal_attributes = Normalizer.normalize_meal(meal_attributes)
-
-      Normalizer.populate_db(meal_attributes, Meal)
+      Normalizer.populate_db(JSON.parse(line))
     end
 
-    puts 'Meals generated!'
+    Normalizer.clean_db
+    puts 'All meals and ingredients generated!'
+  end
+
+  # Normalizes meals and ingredients and creates records in database
+  def self.populate_db(meal_attributes)
+    # Can't use meals without an image in app
+    return if meal_attributes['image'].blank?
+
+    # Removes the attributes we are not using in the app
+    meal_attributes.except!('author_tip', 'budget')
+
+    # Renames column so we can differentiate Ingredients association for ingredients stored in Meal column in database
+    meal_attributes['display_ingredients'] = meal_attributes.delete('ingredients').uniq
+
+    ingredients_meals_attributes = Normalizer.normalize_and_create_ingredients(meal_attributes['display_ingredients'])
+
+    return unless ingredients_meals_attributes.any?
+
+    # Passes ingredients_meals_attributes through accepts_nested_attributes in meal.rb
+    meal_attributes[:ingredients_meals_attributes] = ingredients_meals_attributes.uniq
+    Normalizer.normalize_and_create_meal(meal_attributes)
+  end
+
+  # Removes useless ingredients after normalizing
+  def self.clean_db
+    # Ordering is mandatory for both complex and plural ingredients deletion
+    ingredients = Ingredient.order(:name)
+
+    complex_ingredients_ids_to_delete = Normalizer.select_duplicated_complex_ingredients_ids(ingredients)
+
+    puts 'Deleting complex ingredients...'
+    Ingredient.where(id: complex_ingredients_ids_to_delete).destroy_all
+    puts 'Deleted complex ingredients!'
+
+    plural_ingredients_ids_to_delete = Normalizer.select_duplicated_plural_ingredients_ids(ingredients)
+    puts 'Deleting plural ingredients...'
+    Ingredient.where(id: plural_ingredients_ids_to_delete).destroy_all
+    puts 'Deleted plural ingredients!'
   end
 
   # Normalizes ingredients by removing weight and/or useless information for the database
-  def self.normalize_ingredients(ingredients)
+  def self.normalize_and_create_ingredients(ingredients)
     ingredients_meals_attributes = []
 
     ingredients.each do |ingredient|
       ingredient_attributes = Normalizer.match_ingredient(ingredient)
 
-      created_ingredient = Normalizer.populate_db(ingredient_attributes, Ingredient) if ingredient_attributes[:name].present?
+      created_ingredient = Normalizer.create_in_db(ingredient_attributes, Ingredient) if ingredient_attributes[:name].present?
 
       # Prepares a hash to create IngredientsMeal with new or match already created Ingredient for current Meal
       ingredients_meals_attributes << { ingredient_id: created_ingredient.id || Ingredient.where(name: created_ingredient.name).first.id } if created_ingredient
@@ -144,7 +227,7 @@ class Normalizer < ApplicationRecord
 
     # Matches our constants to remove useless informations like weight, commentaries, etc
     ingredient = ingredient.gsub(Regexp.union(MATCH_BEFORE), '')
-    ingredient = ingredient.gsub(/#{MATCH_QUANTITIES}/, '')
+    ingredient = ingredient.gsub(/#{MATCH_TERMS}/, '')
     ingredient = ingredient.gsub(Regexp.union(MATCH_AFTER), '')
     ingredient = ingredient.gsub(Regexp.union(MATCH_LAST), '')
 
@@ -152,26 +235,25 @@ class Normalizer < ApplicationRecord
     ingredient = ingredient.gsub(/\s+/, ' ')
     ingredient = ingredient.strip
 
-    # Returns a hash that can be used to create a new Ingredient
+    # Excludes unnecessary ingredients in search
+    ingredient = ingredient.gsub(Regexp.union(TO_EXCLUDE), '')
+    ingredient = ingredient.strip
+
     { name: ingredient }
   end
 
   # Creates the object in database
-  def self.populate_db(attributes, object_class)
-    object = object_class.create(attributes)
-
-    puts "Created #{object_class} #{object.name}" if object.persisted?
-
-    object
+  def self.create_in_db(attributes, object_class)
+    object_class.create(attributes)
   end
 
   # Transforms all time values as string into integers
-  def self.normalize_meal(meal_attributes)
+  def self.normalize_and_create_meal(meal_attributes)
     %w[prep_time cook_time total_time].each do |attribute|
       meal_attributes[attribute] = Normalizer.convert_time_string_to_seconds(meal_attributes[attribute])
     end
 
-    meal_attributes
+    Normalizer.create_in_db(meal_attributes, Meal)
   end
 
   # Transforms every time value indicated as a string in the json file into an time value in seconds as an integer, for the database
@@ -183,7 +265,7 @@ class Normalizer < ApplicationRecord
 
       split_time = Normalizer.get_seconds_nb_from_duration_type(duration_type, time)
 
-      # We store the processed value
+      # Stores the processed value
       time_array << split_time[:processed_value]
 
       # We only reiterate on the remaining unprocessed values
@@ -197,7 +279,7 @@ class Normalizer < ApplicationRecord
   def self.get_seconds_nb_from_duration_type(duration_type, time)
     split_time = time.split(duration_type)
 
-    # We send a different method regarding the duration_type (days, hours or minutes)
+    # Sends a different method regarding the duration_type (days, hours or minutes)
     case duration_type
     when 'j'
       time_method = 'days'
@@ -207,7 +289,59 @@ class Normalizer < ApplicationRecord
       time_method = 'minutes'
     end
 
-    # We return two values, the already processed values and the remaining unprocessed values we need to reiterate on
+    # ReturnS two values, the already processed values and the remaining unprocessed values we need to reiterate on
     { processed_value: split_time.first.to_i.send(time_method).to_i, remaining_value: split_time.try(:second) }
+  end
+
+  # Removes too complex ingredients for users that have a simpler duplicate
+  def self.select_duplicated_complex_ingredients_ids(ingredients)
+    ingredients_ids_to_delete = []
+    ingredients.each do |ingredient|
+      ingredient_name = ingredient.name
+      split_ingredient_name = ingredient_name.split
+
+      # Do not remove complex version of specified ingredients
+      next if split_ingredient_name[0].in?(COMPLEX_INGREDIENTS_TO_KEEP)
+
+      simple_ingredient_to_keep = Ingredient.where('name LIKE ?', split_ingredient_name[0].to_s).first
+
+      # Do not remove ingredient when it has no simpler version
+      next unless (split_ingredient_name.size > 1) && simple_ingredient_to_keep
+
+      ingredients_ids_to_delete << ingredient.id
+
+      # Replaces the ingredient to delete with its simple version
+      ingredient.meals.each do |meal|
+        IngredientsMeal.where(ingredient: simple_ingredient_to_keep, meal: meal).first_or_create
+      end
+
+      puts "Preparing to delete complex ingredient #{ingredient_name}..."
+    end
+
+    ingredients_ids_to_delete
+  end
+
+  # Removes duplicates ingredients that have a plural if the singular already exists
+  def self.select_duplicated_plural_ingredients_ids(ingredients)
+    ingredients_ids_to_delete = []
+    ingredients.each do |ingredient|
+      ingredient_name = ingredient.name
+      singularized_name = ingredient_name.split[0].singularize
+      singular_ingredient_to_keep = Ingredient.where(name: singularized_name).where.not(id: ingredient.id).first
+
+      # Do not remove the ingredient when it has no singular version
+      next unless singular_ingredient_to_keep && (ingredient_name.split[0] != singularized_name)
+
+      ingredients_ids_to_delete << ingredient.id
+
+      # Replaces the ingredient to delete with its singular version
+      ingredient.meals.each do |meal|
+        IngredientsMeal.where(ingredient: singular_ingredient_to_keep, meal: meal).first_or_create
+      end
+
+      puts "Preparing to delete duplicated plural ingredient #{ingredient_name}..."
+    end
+
+    ingredients_ids_to_delete
   end
 end
