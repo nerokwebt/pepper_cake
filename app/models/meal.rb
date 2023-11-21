@@ -14,6 +14,9 @@ class Meal < ApplicationRecord
 
   validates :name, uniqueness: true
 
+  scope :random_suggested_meals, -> () { where('nb_comments > ?', 30)
+                                         .where('rate > ?', 4.6) }
+
   def self.meals_w_one_ingredient(ingredients)
     Meal.joins(ingredients_meals: :ingredient)
         .where(ingredients_meals: { ingredient: ingredients })
@@ -26,7 +29,7 @@ class Meal < ApplicationRecord
     meals_w_one_ingredient = meals_w_one_ingredient(ingredients)
 
     meals_to_exclude = Meal.joins(ingredients_meals: :ingredient)
-                           .where(id: meals_w_one_ingredient.pluck(:id))
+                           .where(id: meals_w_one_ingredient(ingredients).pluck(:id))
                            .where.not(ingredients_meals: { ingredient: ingredients })
 
     Meal.where(id: meals_w_one_ingredient.pluck(:id))
@@ -35,19 +38,17 @@ class Meal < ApplicationRecord
   end
 
   def self.suggested_meals(ingredients_names)
-    basic_suggestions = Meal.where('nb_comments > ?', 30).where('rate > ?', 4.6).sample(6)
-
     if ingredients_names&.any?
       ingredients = Ingredient.where(name: ingredients_names)
-      suggested_meals = Meal.meals_w_one_ingredient(ingredients).order(rate: :desc).first(30).sample(6)
+      suggested_meals = Meal.meals_w_one_ingredient(ingredients).order(rate: :desc)
 
       if suggested_meals.count >= 6
-        suggested_meals
+        suggested_meals.first(30).sample(6)
       else
-        (suggested_meals + basic_suggestions).first(6)
+        suggested_meals.or(random_suggested_meals).first(30).sample(6)
       end
     else
-      basic_suggestions
+      random_suggested_meals
     end
   end
 end
