@@ -20,6 +20,7 @@ class Normalizer < ApplicationRecord
     'bouquet',
     'bouteille',
     'branche',
+    'branchette',
     'brin',
     'brique',
     'briquette',
@@ -126,7 +127,7 @@ class Normalizer < ApplicationRecord
 
   MATCH_LAST = [
     / d['e]? ?\z/,
-    /\Ad['e] /,
+    /\Ad('|e )/,
     / .\z/
   ].freeze
 
@@ -180,7 +181,7 @@ class Normalizer < ApplicationRecord
 
     # Passes ingredients_meals_attributes through accepts_nested_attributes in meal.rb
     meal_attributes[:ingredients_meals_attributes] = ingredients_meals_attributes.uniq
-    Normalizer.normalize_and_create_meal(meal_attributes)
+    Normalizer.normalize_and_create_meals(meal_attributes)
   end
 
   # Removes useless ingredients after normalizing
@@ -198,6 +199,12 @@ class Normalizer < ApplicationRecord
     puts 'Deleting plural ingredients...'
     Ingredient.where(id: plural_ingredients_ids_to_delete).destroy_all
     puts 'Deleted plural ingredients!'
+  end
+
+  def self.normalize_and_create_meals(meal_attributes)
+    meal_attributes['name'] = meal_attributes['name'].capitalize
+
+    Normalizer.create_in_db(meal_attributes, Meal)
   end
 
   # Normalizes ingredients by removing weight and/or useless information for the database
@@ -245,52 +252,6 @@ class Normalizer < ApplicationRecord
   # Creates the object in database
   def self.create_in_db(attributes, object_class)
     object_class.create(attributes)
-  end
-
-  # Transforms all time values as string into integers
-  def self.normalize_and_create_meal(meal_attributes)
-    %w[prep_time cook_time total_time].each do |attribute|
-      meal_attributes[attribute] = Normalizer.convert_time_string_to_seconds(meal_attributes[attribute])
-    end
-
-    Normalizer.create_in_db(meal_attributes, Meal)
-  end
-
-  # Transforms every time value indicated as a string in the json file into an time value in seconds as an integer, for the database
-  def self.convert_time_string_to_seconds(time)
-    time_array = []
-
-    %w[j h min].each do |duration_type|
-      next unless time && duration_type.in?(time)
-
-      split_time = Normalizer.get_seconds_nb_from_duration_type(duration_type, time)
-
-      # Stores the processed value
-      time_array << split_time[:processed_value]
-
-      # We only reiterate on the remaining unprocessed values
-      time = split_time[:remaining_value]
-    end
-
-    time_array.inject(:+)
-  end
-
-  # Transforms a string into an integer in seconds regarding its duration_type (days, hours or minutes)
-  def self.get_seconds_nb_from_duration_type(duration_type, time)
-    split_time = time.split(duration_type)
-
-    # Sends a different method regarding the duration_type (days, hours or minutes)
-    case duration_type
-    when 'j'
-      time_method = 'days'
-    when 'h'
-      time_method = 'hours'
-    when 'min'
-      time_method = 'minutes'
-    end
-
-    # ReturnS two values, the already processed values and the remaining unprocessed values we need to reiterate on
-    { processed_value: split_time.first.to_i.send(time_method).to_i, remaining_value: split_time.try(:second) }
   end
 
   # Removes too complex ingredients for users that have a simpler duplicate
