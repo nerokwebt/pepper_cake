@@ -1,0 +1,165 @@
+.search-meals-title {
+  font-weight: bold;
+  text-align: center;
+}
+
+.search-mealss {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.search-meals-item {
+  max-width: 366px;
+}
+
+.search-meals-name {
+  color: #ffa063;
+  font-weight: bold;
+  width: 65%;
+  float: left;
+}
+
+.search-meals-time-and-rating {
+  width: 30%;
+  float: right;
+  text-align: right;
+}
+
+.search-meals-image {
+  max-width: 366px;
+}
+
+.search-meals-rating {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  gap: 4px;
+}
+
+.search-meals-rating-image {
+  max-height: 16px;
+}
+
+.suggestions-title {
+  font-weight: bold;
+  text-align: center;
+}
+
+.suggestion-meals {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.suggestion-meal-item {
+  max-width: 165px;
+}
+
+.suggestion-meal-image {
+  max-width: 165px;
+}
+
+.suggestion-meal-name {
+  color: #ffa063;
+  font-weight: bold;
+  width: 65%;
+  float: left;
+}
+
+.suggestion-meal-time-and-rating {
+  width: 30%;
+  float: right;
+  text-align: right;
+}
+
+.suggestion-rating {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  gap: 4px;
+}
+
+.suggestion-rating-image {
+  max-height: 9px;
+}
+
+.meal-title {
+  text-align: center;
+}
+
+.meal-first-block { 
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.meal-rating {
+  width: 50%;
+  float: left;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: 4px;
+}
+
+.meal-rating-image {
+  max-height: 16px;
+}
+
+.meal-comments {
+  width: 50%;
+  float: right;
+  text-align: right;
+}
+
+.meal-image {
+  max-width: 400px;
+  margin-top: 2px;
+}
+
+.meal-author {
+  text-align: right;
+}
+
+.meal-tags {
+  text-align: center;
+}
+
+.meal-tag-item {
+  text-align: center;
+  display: inline-block;
+  outline: 0;
+  border: none;
+  height: 26px;
+  padding: 3px 10px;
+  border-radius: 50px;
+  background-color: #ffa063;
+  color: #222;
+  font-size: 14px;
+  font-weight: 400;
+  margin-bottom: 5px;
+  margin-right: 5px;           
+}
+
+.meal-infos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.meal-ingredients {
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.meal-people-quantity {
+  display: inline-block;
+  font-weight: bold;
+  color: #ffa063;
+}

@@ -1,20 +1,56 @@
 %div
-  %h1.font-bold.text-4xl Home#index
-  %p Would you try one of those delicious meals?
-  %div
-    - if @meals
+  .row
+    %h4
+      .search-meals-title
+        Tell us all the ingredients you have
+        %br
+        in your kitchen, we'll do the rest!
+    = form_with url: '/meals', method: :get do |f|
+      = f.select :ingredients, Ingredient.pluck(:name).sort, { multiple: true, selected: params[:ingredients] }, { class: 'ingredient-select' }
+      .save-button-box
+        = f.submit 'Search meals', class: 'save-button'
+
+
+- if @meals
+  %hr
+  - if @meals.any?
+    %h2
+      .search-meals-title
+        Oh, we found exactly what you need...
+    %br
+    .search-meals
       - @meals.each do |meal|
-        %p= meal.name
-        %p= meal.ingredients.pluck(:name).sort
-        / %p= meal.display_ingredients
-
-  = form_with url: '/meals', method: :get do |f|
-    = f.select :ingredients, Ingredient.pluck(:name).sort, { multiple: true }, { class: 'ingredient-select' }
-    = f.submit
-
-    - @suggested_meals.each do |meal|
-      / %p= image_tag("meal.image")
-      %p= meal.name
-      %p= meal.tags
-      %p= meal.total_time
-      %p= meal.ingredients.pluck(:name)
+        .search-meals-item
+          = link_to(meal_path(meal)) do
+            = image_tag(meal.image, class: 'search-meals-image')
+            .search-meals-name
+              = meal.name
+            .search-meals-time-and-rating
+              = meal.total_time
+              %br
+              .search-meals-rating
+                = image_tag('star.png', class: 'search-meals-rating-image')
+                = meal.rate
+    %hr
+      %h5
+        .suggestions-title
+          We know those are delicious,
+          %br
+          why wouldn't you try them out?
+        = render 'suggestion_meals'
+  - else
+    %h2
+      .search-title
+        Unfortunately, there are no meals that match your ingredients, but...
+    %h3
+      .suggestions-title
+        With a bit more, you could cook those!
+      = render 'suggestion_meals'
+- else
+  %hr
+    %h5
+      .suggestions-title
+        We know those are delicious,
+        %br
+        why wouldn't you try them out?
+      = render 'suggestion_meals'

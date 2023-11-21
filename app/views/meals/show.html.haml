@@ -1,0 +1,42 @@
+.meal-title
+  %h3
+    The
+    = ['amazing', 'marvelous', 'astonishing', 'staggering', 'breathtaking', 'spectacular', 'prodigious', 'wondrous'].sample
+  %h2
+    %b
+      = "« #{@meal.name} »"
+
+.meal-first-block
+  .meal-rating
+    = image_tag('star.png', class: 'meal-rating-image')
+    = @meal.rate
+  .meal-comments
+    %u
+      = link_to("#{@meal.nb_comments} comments", 'https://www.pennylane.com/fr/clients/')
+  = image_tag(@meal.image, class: 'meal-image')
+  .meal-author
+    = "Author: #{@meal.author}"
+
+%br
+.meal-tags
+  - @meal.tags.each do |tag|
+    .meal-tag-item
+      = tag
+%br
+.meal-infos
+  = image_tag('clock.svg', class: 'meal-rating-image')
+  = @meal.total_time
+  •
+  = image_tag('chef.svg', class: 'meal-rating-image')
+  = @meal.difficulty
+
+%br
+.meal-ingredients
+  %b
+    Ingredients for
+    .meal-people-quantity
+      = @meal.people_quantity
+    persons:
+  - @meal.display_ingredients.each do |di|
+    %br
+    = "- #{di}"

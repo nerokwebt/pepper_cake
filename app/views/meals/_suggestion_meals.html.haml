@@ -1,0 +1,14 @@
+%br
+.suggestion-meals
+  - @suggestion_meals.each do |meal|
+    .suggestion-meal-item
+      = link_to(meal_path(meal)) do
+        = image_tag(meal.image, class: 'suggestion-meal-image')
+        .suggestion-meal-name
+          = meal.name
+        .suggestion-meal-time-and-rating
+          = meal.total_time
+          %br
+          .suggestion-rating
+            = image_tag('star.png', class: 'suggestion-rating-image')
+            = meal.rate

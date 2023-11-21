@@ -11,6 +11,14 @@
     = stylesheet_link_tag "https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"
     = javascript_include_tag "https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"
     = javascript_importmap_tags
+    = favicon_link_tag asset_path('pepper_cake_logo.png')
+
+  .header
+    = link_to(root_path) do
+      .logo-header
+        = image_tag("pepper_cake_logo.png", class: "logo-image")
+        .text-logo-header
+          Pepper Cake
   %body
     %main.container.mx-auto.mt-28.px-5.flex
       = yield
