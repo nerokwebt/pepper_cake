@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_11_19_123057) do
+ActiveRecord::Schema[7.1].define(version: 2023_11_21_143616) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -35,9 +35,9 @@ ActiveRecord::Schema[7.1].define(version: 2023_11_19_123057) do
     t.string "author"
     t.string "name"
     t.string "difficulty"
-    t.integer "prep_time"
-    t.integer "cook_time"
-    t.integer "total_time"
+    t.string "prep_time"
+    t.string "cook_time"
+    t.string "total_time"
     t.integer "people_quantity"
     t.float "rate"
     t.integer "nb_comments"
