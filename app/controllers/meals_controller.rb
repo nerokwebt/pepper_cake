@@ -2,8 +2,8 @@
 
 class MealsController < ApplicationController
   def index
-    @meals = Meal.search_meals(params[:ingredients])
-    @suggested_meals = Meal.suggested_meals(params[:ingredients])
+    @meals = Meal.search_meals(params[:ingredients]&.reject(&:empty?))
+    @suggestion_meals = Meal.suggested_meals(params[:ingredients]&.reject(&:empty?))
   end
 
   def show
