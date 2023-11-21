@@ -148,6 +148,10 @@ class Normalizer < ApplicationRecord
     vin
   ].freeze
 
+  PLURAL_INGREDIENTS_TO_KEEP = %w[
+    p[âa]tes
+  ].freeze
+
   # Reads the json file to populate database
   def self.parse(file)
     lines_nb = File.foreach(file).count
@@ -287,11 +291,16 @@ class Normalizer < ApplicationRecord
     ingredients_ids_to_delete = []
     ingredients.each do |ingredient|
       ingredient_name = ingredient.name
-      singularized_name = ingredient_name.split[0].singularize
+      split_ingredient_name = ingredient_name.split
+      
+      # Do not remove plural version of specified ingredients
+      next if split_ingredient_name[0].in?(PLURAL_INGREDIENTS_TO_KEEP)
+
+      singularized_name = split_ingredient_name[0].singularize
       singular_ingredient_to_keep = Ingredient.where(name: singularized_name).where.not(id: ingredient.id).first
 
       # Do not remove the ingredient when it has no singular version
-      next unless singular_ingredient_to_keep && (ingredient_name.split[0] != singularized_name)
+      next unless singular_ingredient_to_keep && (split_ingredient_name[0] != singularized_name)
 
       ingredients_ids_to_delete << ingredient.id
 
