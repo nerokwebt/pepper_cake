@@ -20,6 +20,9 @@ Metrics/AbcSize:
 Metrics/MethodLength:
   Enabled: false
 
+Style/HashSyntax:
+  Enabled: false
+
 AllCops:
   NewCops: enable
   Exclude:
