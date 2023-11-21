@@ -22,7 +22,7 @@ class Meal < ApplicationRecord
   def self.search_meals(ingredients_names)
     return unless ingredients_names&.any?
 
-    ingredients = Ingredient.where(name: ingredients_names.reject(&:empty?))
+    ingredients = Ingredient.where(name: ingredients_names)
     meals_w_one_ingredient = meals_w_one_ingredient(ingredients)
 
     meals_to_exclude = Meal.joins(ingredients_meals: :ingredient)
@@ -31,14 +31,23 @@ class Meal < ApplicationRecord
 
     Meal.where(id: meals_w_one_ingredient.pluck(:id))
         .where.not(id: meals_to_exclude.pluck(:id))
+        .order(rate: :desc).first(10)
   end
 
   def self.suggested_meals(ingredients_names)
+    basic_suggestions = Meal.where('nb_comments > ?', 30).where('rate > ?', 4.6).sample(6)
+
     if ingredients_names&.any?
-      ingredients = Ingredient.where(name: ingredients_names.reject(&:empty?))
-      Meal.meals_w_one_ingredient(ingredients).order(rate: :desc).first(30).sample(5)
+      ingredients = Ingredient.where(name: ingredients_names)
+      suggested_meals = Meal.meals_w_one_ingredient(ingredients).order(rate: :desc).first(30).sample(6)
+
+      if suggested_meals.count >= 6
+        suggested_meals
+      else
+        (suggested_meals + basic_suggestions).first(6)
+      end
     else
-      Meal.where('nb_comments > ?', 30).where('rate > ?', 4.6).sample(5)
+      basic_suggestions
     end
   end
 end
