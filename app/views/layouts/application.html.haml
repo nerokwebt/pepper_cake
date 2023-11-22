@@ -14,11 +14,10 @@
     = favicon_link_tag asset_path('pepper_cake_logo.png')
 
   .header
-    = link_to(root_path) do
-      .logo-header
-        = image_tag("pepper_cake_logo.png", class: "logo-image")
-        .logo-text
-          Pepper Cake
+    = link_to(root_path, class: 'logo-header') do
+      = image_tag("pepper_cake_logo.png", class: "logo-image")
+      .logo-text
+        Pepper Cake
   %body
     %main.container.mx-auto.mt-28.px-5.flex
       = yield
