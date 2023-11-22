@@ -28,11 +28,11 @@ class Meal < ApplicationRecord
     meals_w_one_ingredient = meals_w_one_ingredient(ingredients)
 
     meals_to_exclude = Meal.joins(ingredients_meals: :ingredient)
-                           .where(id: meals_w_one_ingredient(ingredients).pluck(:id))
+                           .where(id: meals_w_one_ingredient(ingredients).select(:id))
                            .where.not(ingredients_meals: { ingredient: ingredients })
 
-    Meal.where(id: meals_w_one_ingredient.pluck(:id))
-        .where.not(id: meals_to_exclude.pluck(:id))
+    Meal.where(id: meals_w_one_ingredient.select(:id))
+        .where.not(id: meals_to_exclude.select(:id))
         .order(rate: :desc).first(10)
   end
 
