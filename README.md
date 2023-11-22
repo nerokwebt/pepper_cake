@@ -14,6 +14,9 @@ Examples of ingredients:
 #### Additional context:
 Additionally, the app uses [french-language recipes](https://pennylane-interviewing-assets-20220328.s3.eu-west-1.amazonaws.com/recipes-fr.json.gz) scraped from [www.marmiton.org](http://www.marmiton.org/) to seed the database. Ingredients from the dataset are **parsed** and **normalized**. A few aberrations remain and, given enough time, should be caught by the Normalizer (example: "pomme de teere" instead of "pomme de terre").
 
+#### Hosting:
+The app is free-hosted on fly.io and is accessible via [peppercake.fly.dev](https://peppercake.fly.dev/).
+
 ---
 
 ### User Stories
