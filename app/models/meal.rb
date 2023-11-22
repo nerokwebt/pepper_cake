@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
 class Meal < ApplicationRecord
-  serialize :tags, coder: JSON, type: Array
-  serialize :display_ingredients, coder: JSON, type: Array
-
   has_many :ingredients_meals, dependent: :destroy
   has_many :ingredients, through: :ingredients_meals
 
