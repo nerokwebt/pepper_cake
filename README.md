@@ -12,5 +12,4 @@ I go to the [Pepper Cake website](https://peppercake.fly.dev).
 ---
 
 ### Database structure
-
-![database_structure](https://i.ibb.co/Dp1CSVk/database-schema.png)
+![database_structure](https://i.ibb.co/nzqJs0N/database-structure.png)
