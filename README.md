@@ -12,4 +12,4 @@ I go to the [Pepper Cake website](https://peppercake.fly.dev).
 ---
 
 ### Database structure
-![database_structure](https://i.ibb.co/nzqJs0N/database-structure.png)
+![database structure](https://i.ibb.co/9HBVfVr/database-structure.png)
