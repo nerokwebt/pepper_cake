@@ -2,21 +2,24 @@
   .row
     %h4
       .search-meals-title
-        Tell us all the ingredients you have
+        Tapez la liste complète des ingrédients de votre cuisine,
         %br
-        in your kitchen, we'll do the rest!
+        on s'occupe du reste !
     = form_with url: '/meals', method: :get do |f|
       = f.select :ingredients, Ingredient.pluck(:name).sort, { multiple: true, selected: params[:ingredients] }, { class: 'ingredient-select' }
       .save-button-box
-        = f.submit 'Search meals', class: 'save-button'
-
+        = f.submit 'Chercher des plats', class: 'save-button'
 
 - if @meals
-  %hr
+  %br
   - if @meals.any?
     %h2
       .search-meals-title
-        Oh, we found exactly what you need...
+        Oh, on a trouvé
+        %i
+          exactement
+        %br
+        ce que vous cherchiez...
     %br
     .search-meals
       - @meals.each do |meal|
@@ -34,23 +37,30 @@
     %hr
       %h5
         .suggestions-title
-          We know those are delicious,
+          Et avec quelques ingrédients en plus,
           %br
-          why wouldn't you try them out?
+          vous pourriez aussi tester ces plats
         = render 'suggestion_meals'
   - else
     %h2
       .search-meals-title
-        Unfortunately, there are no meals that match your ingredients, but...
+        Malheureusement, aucun plat ne correspond à votre recherche,
+        %i
+          mais...
     %h3
       .suggestions-title
-        With a bit more, you could cook those!
+        Avec quelques ingrédients en plus,
+        %br
+        vous pourriez tester ces plats !
       = render 'suggestion_meals'
 - else
   %hr
     %h5
       .suggestions-title
-        We know those are delicious,
+        Ou si vous préférez,
         %br
-        why wouldn't you try them out?
+        vous pouvez essayer un des ces
+        %i
+          délicieux
+        plats
       = render 'suggestion_meals'

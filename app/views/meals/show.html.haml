@@ -1,7 +1,6 @@
 .meal-title
   %h3
-    The
-    = ['amazing', 'marvelous', 'astonishing', 'staggering', 'breathtaking', 'spectacular', 'prodigious', 'wondrous'].sample
+    = "L'" + %w[incroyable invraisemblable extraordinaire admirable unique insolite inimaginable immense intense excentrique ineffable épique indescriptible inimitable].sample
   %h2
     %b
       = "« #{@meal.name} »"
@@ -12,10 +11,11 @@
     = @meal.rate
   .meal-comments
     %u
-      = link_to("#{@meal.nb_comments} comments", 'https://www.pennylane.com/fr/clients/')
+      = link_to("#{@meal.nb_comments} commentaires", 'https://www.pennylane.com/fr/clients/')
   = image_tag(@meal.image, class: 'meal-image')
   .meal-author
-    = "Author: #{@meal.author}"
+    Conçu avec amour par
+    %b= @meal.author
 
 %br
 .meal-tags
@@ -33,10 +33,10 @@
 %br
 .meal-ingredients
   %b
-    Ingredients for
+    Ingrédients et quantités pour
     .meal-people-quantity
       = @meal.people_quantity
-    persons:
+    personnes :
   - @meal.display_ingredients.each do |di|
     %br
     = "- #{di}"
