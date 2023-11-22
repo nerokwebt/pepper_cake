@@ -161,7 +161,7 @@ class Normalizer < ApplicationRecord
       puts "\rParsing progess: #{lines_count} / #{lines_nb}"
       lines_count += 1
 
-      Normalizer.populate_db(JSON.parse(line))
+      Normalizer.normalize_and_populate_db(JSON.parse(line))
     end
 
     Normalizer.clean_db
@@ -169,7 +169,7 @@ class Normalizer < ApplicationRecord
   end
 
   # Normalizes meals and ingredients and creates records in database
-  def self.populate_db(meal_attributes)
+  def self.normalize_and_populate_db(meal_attributes)
     # Can't use meals without an image in app
     return if meal_attributes['image'].blank?
 
@@ -292,7 +292,7 @@ class Normalizer < ApplicationRecord
     ingredients.each do |ingredient|
       ingredient_name = ingredient.name
       split_ingredient_name = ingredient_name.split
-      
+
       # Do not remove plural version of specified ingredients
       next if split_ingredient_name[0].in?(PLURAL_INGREDIENTS_TO_KEEP)
 
