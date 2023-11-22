@@ -14,8 +14,7 @@ class Meal < ApplicationRecord
 
   validates :name, uniqueness: true
 
-  scope :random_suggested_meals, -> () { where('nb_comments > ?', 30)
-                                         .where('rate > ?', 4.6) }
+  scope :random_suggested_meals, -> { where('nb_comments > ?', 30).where('rate > ?', 4.6) }
 
   def self.meals_w_one_ingredient(ingredients)
     Meal.joins(ingredients_meals: :ingredient)

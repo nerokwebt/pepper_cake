@@ -8,6 +8,9 @@ Layout/LineLength:
 Rails/Output:
   Enabled: false
 
+Style/Lambda:
+  Enabled: false
+
 Style/Documentation:
   Enabled: false
 
