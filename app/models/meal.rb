@@ -43,12 +43,12 @@ class Meal < ApplicationRecord
       suggested_meals = Meal.meals_w_one_ingredient(ingredients).order(rate: :desc)
 
       if suggested_meals.count >= 6
-        suggested_meals.first(30).sample(6)
+        suggested_meals.distinct.first(30).sample(6)
       else
-        suggested_meals.or(random_suggested_meals).first(30).sample(6)
+        suggested_meals.or(random_suggested_meals).distinct.first(30).sample(6)
       end
     else
-      random_suggested_meals.sample(6)
+      random_suggested_meals.distinct.sample(6)
     end
   end
 end
