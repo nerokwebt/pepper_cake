@@ -173,7 +173,7 @@ class Normalizer
     return if meal_attributes['image'].blank?
 
     # Removes the attributes we are not using in the app
-    meal_attributes.except!('author_tip', 'budget')
+    meal_attributes.except!('author_tip', 'budget', 'prep_time', 'cook_time')
 
     # Renames column so we can differentiate Ingredients association for ingredients stored in Meal column in database
     meal_attributes['display_ingredients'] = meal_attributes.delete('ingredients').uniq
@@ -212,18 +212,13 @@ class Normalizer
 
   # Normalizes ingredients by removing weight and/or useless information for the database
   def self.normalize_and_create_ingredients(ingredients)
-    ingredients_meals_attributes = []
-
-    ingredients.each do |ingredient|
+    ingredients.filter_map do |ingredient|
       ingredient_attributes = Normalizer.match_ingredient(ingredient)
 
       created_ingredient = Normalizer.create_in_db(ingredient_attributes, Ingredient) if ingredient_attributes[:name].present?
 
-      # Prepares a hash to create IngredientsMeal with new or match already created Ingredient for current Meal
-      ingredients_meals_attributes << { ingredient_id: created_ingredient.id || Ingredient.where(name: created_ingredient.name).first.id } if created_ingredient
+      created_ingredient ? { ingredient_id: created_ingredient.id || Ingredient.where(name: created_ingredient.name).first.id } : nil
     end
-
-    ingredients_meals_attributes
   end
 
   # Matches regex patterns defined as constants to normalize the ingredient
