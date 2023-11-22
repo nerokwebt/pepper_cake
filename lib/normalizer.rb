@@ -3,7 +3,7 @@
 # This class normalizes data extracted from the recipes file, mainly to create ingredients in database used to match the user's search, by
 # removing useless information for the search as weight or authors commentaries, helping to get a clean autocomplete. Though, the methods don't
 # drop those weights and commentaries and store it in a column instead for display purposes.
-class Normalizer < ApplicationRecord
+class Normalizer
   TERMS_LIST = [
     'aiguillette',
     'aile',
@@ -157,9 +157,8 @@ class Normalizer < ApplicationRecord
     lines_nb = File.foreach(file).count
     lines_count = 1
 
-    File.readlines(file).each do |line|
-      puts "\rParsing progess: #{lines_count} / #{lines_nb}"
-      lines_count += 1
+    File.readlines(file).each_with_index do |line, i|
+      puts "\rParsing progess: #{i + 1} / #{lines_nb}"
 
       Normalizer.normalize_and_populate_db(JSON.parse(line))
     end
