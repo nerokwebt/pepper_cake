@@ -155,7 +155,6 @@ class Normalizer
   # Reads the json file to populate database
   def self.parse(file)
     lines_nb = File.foreach(file).count
-    lines_count = 1
 
     File.readlines(file).each_with_index do |line, i|
       puts "\rParsing progess: #{i + 1} / #{lines_nb}"
