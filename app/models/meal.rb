@@ -6,7 +6,7 @@ class Meal < ApplicationRecord
 
   accepts_nested_attributes_for :ingredients_meals
 
-  validates :author, :name, :difficulty, :prep_time, :cook_time, :total_time, :people_quantity, :rate, :nb_comments,
+  validates :author, :name, :difficulty, :total_time, :people_quantity, :rate, :nb_comments,
             :image, :tags, :display_ingredients, :ingredients_meals, presence: true
 
   validates :name, uniqueness: true
